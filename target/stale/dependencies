@@ -1,0 +1,1 @@
+([:dependencies [[org.clojure/clojure "1.5.1"] [javancss/javancss "30.51"] [org.adrian.test/test "0.0.1-SNAPSHOT"]]])
