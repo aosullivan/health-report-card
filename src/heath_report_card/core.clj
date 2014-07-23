@@ -4,24 +4,22 @@
             (net.sourceforge.pmd.cpd CPD CPDCommandLineInterface)
             (java.util Locale)
             (java.io ByteArrayInputStream ByteArrayOutputStream PrintStream))  
-  (:require [clojure.test :refer :all]
-            [heath-report-card.core :refer :all]
-            [clojure.pprint :refer :all]
+  (:require [clojure.pprint :refer :all]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zf]
             [clojure.tools.logging :as log]))
 
 (defn capture-console [msg f] 
-  (def bstream (ByteArrayOutputStream.))
-  (def pstream (PrintStream. bstream))
-  (def out (System/out))
-  ;(log/info "Starting:" msg)
-  (System/setOut pstream)
-  (f)
-  (System/setOut out)
-  ;(log/info "Finished:" msg)
-  (ByteArrayInputStream. (.toByteArray bstream)))
+  (let [bstream (ByteArrayOutputStream.)
+        pstream (PrintStream. bstream)
+        out (System/out)]
+    (log/info "Starting:" msg)
+    (System/setOut pstream)
+    (f)
+    (System/setOut out)
+    (log/info "Finished:" msg)
+    (ByteArrayInputStream. (.toByteArray bstream))))
 
 ;Run CPD
 (defn cpd-line-count [srcdir]
