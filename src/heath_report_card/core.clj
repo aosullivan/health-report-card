@@ -45,7 +45,7 @@
     
     { :cyclomatic-complexity-total (apply + (map read-string (zf/xml-> ncss-zip :functions :function :ccn zf/text))) 
       :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
-      :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
+      :non-comment-lines-total (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
 
 ;Run PMD
 (defn pmd-length [srcdir]
@@ -61,4 +61,9 @@
   
   { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
     :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
+
+(defn collect[srcdir]   
+  (merge (cpd-line-count srcdir) 
+         (ncss-line-count srcdir) 
+         (pmd-length srcdir)))
 

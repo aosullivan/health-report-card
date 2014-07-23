@@ -26,11 +26,11 @@
   
   (deftest ncss-line-count-test
     (testing "Line count: 16 -3 braces, -1 whitespace, -1 comment = 11"
-     (is (= 11.0 (:non-comment-lines (ncss-line-count (:src-linecount src-map)))))))
+     (is (= 11.0 (:non-comment-lines-total (ncss-line-count (:src-linecount src-map)))))))
   
   (deftest ncss-line-count-test2
     (testing "Line count: 18 minus 3 comments = 15"
-     (is (= 15.0 (:non-comment-lines (ncss-line-count (:src-complexity src-map)))))))
+     (is (= 15.0 (:non-comment-lines-total (ncss-line-count (:src-complexity src-map)))))))
 
   (deftest ncss-ccn-test
     (testing "Cyclomatic complexity: simple 1, if,else 2, if,elseif,else 3"
@@ -52,7 +52,6 @@
 ; save the xml for reference/debugging
 ; ccn / ncss to double, tidy up decimals
 ; when does it actually exec the commandline, cos everything is a def
-; unit test calculations on some real code
 ; capture console to XML, not to byte array
 ; multithread
 ; update file sources to be local
