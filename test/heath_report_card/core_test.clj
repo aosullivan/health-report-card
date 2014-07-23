@@ -2,15 +2,14 @@
   (:require [clojure.test :refer :all]
             [heath-report-card.core :refer :all]))
 
-
   ;(def src "E:\\workspace-healthcheck\\CDR\\CDR\\JavaDev")
-  (def src "E:\\workspace-sdlc\\javancss\\src\\main\\java")
+  ;(def src "E:\\workspace-sdlc\\javancss\\src\\main\\java")
   
-  (def src-map { :src-dup "duplication"
-                 :src-dupmore "duplicationx3"
-                 :src-nodup "noduplication"
-                 :src-linecount "linecount"
-                 :src-complexity "complexity" } )
+  (def src-map { :src-dup "test\\java\\duplication"
+                 :src-dupmore "test\\java\\duplicationx3"
+                 :src-nodup "test\\java\\noduplication"
+                 :src-linecount "test\\java\\linecount"
+                 :src-complexity "test\\java\\complexity" } )
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
