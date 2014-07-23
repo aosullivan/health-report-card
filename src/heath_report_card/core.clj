@@ -27,7 +27,7 @@
 (defn cpd-line-count [srcdir]
   (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
   
-  (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "10" "--format" "xml"])))]  
+  (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "10" "--format" "xml" "--encoding" "utf-8"])))]  
     
     (try
       (def cpd-seq (xml-seq (xml/parse (capture-console "CPD" run-cpd))))    
