@@ -23,7 +23,7 @@
     (log/info "Finished:" msg)
     (ByteArrayInputStream. (.toByteArray bstream))))
 
-;Run CPD
+;Run CPD 
 (defn cpd-line-count [srcdir]
   (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
   
@@ -33,7 +33,9 @@
       (def cpd-seq (xml-seq (xml/parse (capture-console "CPD" run-cpd))))    
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
     
-    {:duplicate-lines (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
+    ; Duplicates are 10 tokens and 5 or more lines, including whitespace
+    {:duplicate-lines (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
+
 
 ;Run NCSS
 (defn ncss-line-count [srcdir] 
@@ -61,15 +63,20 @@
     (let [all-methods (loop-lengths "ExcessiveMethodLength")  
           all-classes (loop-lengths "ExcessiveClassLength")]
   
-    { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
-      :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
+    { :method-length-average (double (/ (apply + all-methods) (count all-methods) ))
+      :class-length-average (double (/ (apply + all-classes) (count all-classes) )) 
+      :lines-total (apply + all-classes) } )))
 
-  
+(defn print-results [srcdir] 
+
+  (println "Results: ")  
+  (pprint (merge (cpd-line-count srcdir) 
+               (ncss-line-count srcdir) 
+               (pmd-length srcdir))))
+
 (defn -main [& args]   
   (if args
-    (pprint (merge (cpd-line-count (first args)) 
-                   (ncss-line-count (first args)) 
-                   (pmd-length (first args))))
+    (print-results (first args))
     (println "Usage: healthreportcard <source folder>")))
   
 

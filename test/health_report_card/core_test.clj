@@ -38,19 +38,14 @@
   
   (deftest pmd-method-length-test
     (testing "Average method length: 16/3 , Class length: 5 + 6 / 2 = 5.5"
-     (is (= (double (/ 16 3)) (:average-method-length (pmd-length (:src-nodup src-map)))))
-     (is (= 14.0 (:average-class-length (pmd-length (:src-nodup src-map)))))))
-  
-; src not found
- 
+     (is (= (double (/ 16 3)) (:method-length-average (pmd-length (:src-nodup src-map)))))
+     (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
+
 
 ;TODO 
+; src not found
 ; ccn / ncss to double, tidy up decimals
-; when does it actually exec the commandline, cos everything is a def
-; capture console to XML, not to byte array
-; multithread
-; update file sources to be local
 ; save the xml for reference/debugging
+; multithread
 ; package
 ; scm
-
