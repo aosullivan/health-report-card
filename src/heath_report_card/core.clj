@@ -51,7 +51,7 @@
 
 ;Run PMD
 (defn pmd-length [srcdir]
-  (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
+  (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir "--encoding" "utf-8"]))) ] 
     (def pmd-seq (xml-seq (xml/parse (capture-console "PMD" run-pmd)))))
 
   (letfn [ (is-included? [node rule] (and (= :violation (:tag node)) (= rule (:rule (:attrs node)))))
