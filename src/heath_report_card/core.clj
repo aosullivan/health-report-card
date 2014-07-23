@@ -36,16 +36,16 @@
 ;Run NCSS
 (defn ncss-line-count [srcdir] 
   (Locale/setDefault (Locale/US))
-  (defn to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))
   
-  (letfn [(run-ncss [] (Javancss. (into-array ["-xml" "-all" srcdir]) Main/S_RCS_HEADER))]
-  (try
-    (def ncss-zip (zip/xml-zip (xml/parse (capture-console "NCSS" run-ncss))))    
-    (catch Exception e (do (log/warn e) ) (def cpd-seq nil) )))  
-  
-  { :cyclomatic-complexity-total (apply + (map read-string (zf/xml-> ncss-zip :functions :function :ccn zf/text))) 
-    :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
-    :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
+  (letfn [(run-ncss [] (Javancss. (into-array ["-xml" "-all" srcdir]) Main/S_RCS_HEADER))
+          (to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))]
+    (try
+      (def ncss-zip (zip/xml-zip (xml/parse (capture-console "NCSS" run-ncss))))    
+      (catch Exception e (do (log/warn e) ) (def cpd-seq nil) )))  
+    
+    { :cyclomatic-complexity-total (apply + (map read-string (zf/xml-> ncss-zip :functions :function :ccn zf/text))) 
+      :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
+      :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
 
 ;Run PMD
 (defn pmd-length [srcdir]
