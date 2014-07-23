@@ -1,4 +1,4 @@
-(ns health-report-card.core
+(ns health_report_card.core
   (:import  (javancss Javancss Main)
             (net.sourceforge.pmd PMD)
             (net.sourceforge.pmd.cpd CPD CPDCommandLineInterface)
@@ -8,7 +8,9 @@
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zf]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.java.io :as io])
+  (:gen-class :main true))
 
 (defn capture-console [msg f] 
   (let [bstream (ByteArrayOutputStream.)
@@ -62,8 +64,12 @@
     { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
       :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
 
-(defn -main [srcdir]   
-  (merge (cpd-line-count srcdir) 
-         (ncss-line-count srcdir) 
-         (pmd-length srcdir)))
+(defn -main [& args]   
+  (if args
+      (pprint (merge (cpd-line-count (first args)) 
+             (ncss-line-count (first args)) 
+             (pmd-length (first args))))
+    (println "Usage: healthreportcard <source folder>")))
+  
+  
 

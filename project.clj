@@ -11,6 +11,6 @@
                  [org.clojure/tools.logging "0.3.0"]
                  [org.clojure/data.xml "0.0.7"]
                  [org.clojure/data.zip "0.1.1"]]
-  :main heath_report_card.core)
+  :main health_report_card.core)
 
 

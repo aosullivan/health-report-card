@@ -1,6 +1,6 @@
-(ns health-report-card.core-test  
+(ns health_report_card.core_test  
   (:require [clojure.test :refer :all]
-            [health-report-card.core :refer :all]))
+            [health_report_card.core :refer :all]))
 
   ;(def src "E:\\workspace-healthcheck\\CDR\\CDR\\JavaDev")
   ;(def src "E:\\workspace-sdlc\\javancss\\src\\main\\java")
