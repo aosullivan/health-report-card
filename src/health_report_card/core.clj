@@ -34,7 +34,7 @@
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
     
     ; Duplicates are 10 tokens and 5 or more lines, including whitespace
-    {:duplicate-lines (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
+    {:duplicate-lines-total (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
 
 
 ;Run NCSS
@@ -51,6 +51,9 @@
       :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
       :non-comment-lines-total (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) })) 
 
+(defn format-num [x]
+  (read-string (format "%.2f" (double x))))
+
 ;Run PMD
 (defn pmd-length [srcdir]
   (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
@@ -63,16 +66,19 @@
     (let [all-methods (loop-lengths "ExcessiveMethodLength")  
           all-classes (loop-lengths "ExcessiveClassLength")]
   
-    { :method-length-average (double (/ (apply + all-methods) (count all-methods) ))
-      :class-length-average (double (/ (apply + all-classes) (count all-classes) )) 
+    { :method-length-average (format-num (/ (apply + all-methods) (count all-methods) ))
+      :class-length-average (format-num  (/ (apply + all-classes) (count all-classes) )) 
       :lines-total (apply + all-classes) } )))
 
-(defn print-results [srcdir] 
-
-  (println "Results: ")  
-  (pprint (merge (cpd-line-count srcdir) 
-               (ncss-line-count srcdir) 
-               (pmd-length srcdir))))
+(defn print-results [srcdir]
+  
+  (let [results (merge (cpd-line-count srcdir) 
+                       (ncss-line-count srcdir) 
+                       (pmd-length srcdir))]  
+    (println)
+    (println "Results: ")
+    (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))]
+      (pprint (merge results {:duplicate-lines-percentage  duplicate-lines-percentage})))))
 
 (defn -main [& args]   
   (if args

@@ -13,15 +13,15 @@
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines (cpd-line-count (:src-dup src-map)))))))
+     (is (= 10 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
   
    (deftest cpd-duplicated-morelines-test
     (testing "10 line duplicate in 3 files, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines (cpd-line-count (:src-dupmore src-map)))))))
+     (is (= 10 (:duplicate-lines-total (cpd-line-count (:src-dupmore src-map)))))))
 
   (deftest cpd-no-duplicated-lines-test
     (testing "Zero lines duplication"
-     (is (= 0 (:duplicate-lines (cpd-line-count (:src-nodup src-map)))))))
+     (is (= 0 (:duplicate-lines-total (cpd-line-count (:src-nodup src-map)))))))
   
   (deftest ncss-line-count-test
     (testing "Line count: 16 -3 braces, -1 whitespace, -1 comment = 11"
@@ -38,9 +38,8 @@
   
   (deftest pmd-method-length-test
     (testing "Average method length: 16/3 , Class length: 5 + 6 / 2 = 5.5"
-     (is (= (double (/ 16 3)) (:method-length-average (pmd-length (:src-nodup src-map)))))
+     (is (= 5.33 (:method-length-average (pmd-length (:src-nodup src-map)))))
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
-
 
 ;TODO 
 ; src not found
