@@ -12,7 +12,6 @@
             [clojure.data.zip.xml :as zf]
             [clojure.tools.logging :as log]))
 
-
 (defn capture-console [msg f] 
   (def bstream (ByteArrayOutputStream.))
   (def pstream (PrintStream. bstream))
@@ -34,7 +33,7 @@
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
     {:duplicate-lines (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
 
-
+;Run NCSS
 (defn ncss-line-count [srcdir] 
   (Locale/setDefault (Locale/US))
   (defn to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))
@@ -48,21 +47,18 @@
     :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
     :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
 
-
+;Run PMD
 (defn pmd-length [srcdir]
   (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
     (def pmd-seq (xml-seq (xml/parse (capture-console "PMD" run-pmd)))))
 
-  (defn is-included? [node rule] (and (= :violation (:tag node)) (= rule (:rule (:attrs node)))))
-  (defn length [node] (- (read-string (:endline (:attrs node))) (read-string (:beginline (:attrs node)))))
-  (defn loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node)))
+  (letfn [ (is-included? [node rule] (and (= :violation (:tag node)) (= rule (:rule (:attrs node)))))
+           (length [node] (- (read-string (:endline (:attrs node))) (read-string (:beginline (:attrs node)))))
+           (loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node))) ]
   
-  (def all-methods (loop-lengths "ExcessiveMethodLength"))  
-  (def all-classes (loop-lengths "ExcessiveClassLength"))
+    (let [all-methods (loop-lengths "ExcessiveMethodLength")  
+          all-classes (loop-lengths "ExcessiveClassLength")]
   
   { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
-    :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )
-
-
-  (pmd-length "E:\\workspace-sdlc\\test\\src\\main\\java\\noduplication")
+    :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
 
