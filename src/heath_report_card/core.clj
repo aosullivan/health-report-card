@@ -49,27 +49,20 @@
     :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
 
 
+(defn pmd-length [srcdir]
+  (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
+    (def pmd-seq (xml-seq (xml/parse (capture-console "PMD" run-pmd)))))
 
-
-;Run PMD
-;  
-;  (def pmd-seq (xml-seq (xml/parse (capture-console "PMD" '(PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" src])))  )))    
-;  
-;  (defn is-included? [node rule] (and (= :violation (:tag node)) (= rule (:rule (:attrs node)))))
-;  (defn length [node] (- (read-string (:endline (:attrs node))) (read-string (:beginline (:attrs node)))))
-;  (defn loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node)))
-;  
-;  (def all-methods (loop-lengths "ExcessiveMethodLength"))  
-;  (def all-classes (loop-lengths "ExcessiveClassLength"))
-;  
-;  (def average-method-length (double (/ (apply + all-methods) (count all-methods) )))
-;  (def average-class-length (double (/ (apply + all-classes) (count all-classes) )))
-;
-;
-;  (pprint {:non-comment-lines non-comment-lines
-;           :cyclomatic-complexity cyclomatic-complexity            
-;           :average-method-length average-method-length
-;           :average-class-length average-class-length
-;           :duplicated-lines duplicated-lines})
+  (defn is-included? [node rule] (and (= :violation (:tag node)) (= rule (:rule (:attrs node)))))
+  (defn length [node] (- (read-string (:endline (:attrs node))) (read-string (:beginline (:attrs node)))))
+  (defn loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node)))
   
+  (def all-methods (loop-lengths "ExcessiveMethodLength"))  
+  (def all-classes (loop-lengths "ExcessiveClassLength"))
+  
+  { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
+    :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )
+
+
+  (pmd-length "E:\\workspace-sdlc\\test\\src\\main\\java\\noduplication")
 
