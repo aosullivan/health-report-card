@@ -32,7 +32,7 @@
     (try
       (def cpd-seq (xml-seq (xml/parse (capture-console "CPD" run-cpd))))    
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
-    (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))))
+    {:duplicate-lines (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
 
 
 (defn ncss-line-count [srcdir] 

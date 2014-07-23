@@ -13,42 +13,48 @@
   ;(def src "E:\\workspace-healthcheck\\CDR\\CDR\\JavaDev")
   (def src "E:\\workspace-sdlc\\javancss\\src\\main\\java")
   
-  (def src-dup "E:\\workspace-sdlc\\test\\src\\main\\java\\duplication")
-  (def src-dupmore "E:\\workspace-sdlc\\test\\src\\main\\java\\duplicationx3")
-  (def src-nodup "E:\\workspace-sdlc\\test\\src\\main\\java\\noduplication")
-  (def src-linecount "E:\\workspace-sdlc\\test\\src\\main\\java\\linecount")
-  (def src-complexity "E:\\workspace-sdlc\\test\\src\\main\\java\\complexity")
+  (def src-map { :src-dup "E:\\workspace-sdlc\\test\\src\\main\\java\\duplication"
+                 :src-dupmore "E:\\workspace-sdlc\\test\\src\\main\\java\\duplicationx3"
+                 :src-nodup "E:\\workspace-sdlc\\test\\src\\main\\java\\noduplication"
+                 :src-linecount "E:\\workspace-sdlc\\test\\src\\main\\java\\linecount"
+                 :src-complexity "E:\\workspace-sdlc\\test\\src\\main\\java\\complexity" } )
 
-;  (deftest cpd-duplicated-lines-test
-;    (testing "10 line duplicate, includes whitespace and braces"
-;     (is (= 10 (dup-lines-count src-dup)))))
-;
-;   (deftest cpd-duplicated-morelines-test
-;    (testing "10 line duplicate in 3 files, includes whitespace and braces"
-;     (is (= 10 (dup-lines-count src-dupmore)))))
-;
-;  (deftest cpd-duplicated-lines-test
-;    (testing "Zero lines duplication"
-;     (is (= 0 (dup-lines-count src-nodup)))))
+  (:src-dupmore src-map)
+  
+  (deftest cpd-duplicated-lines-test
+    (testing "10 line duplicate, includes whitespace and braces"
+     (is (= 10 (:duplicate-lines (dup-lines-count (:src-dup src-map)))))))
+  
+  
+
+   (deftest cpd-duplicated-morelines-test
+    (testing "10 line duplicate in 3 files, includes whitespace and braces"
+     (is (= 10 (:duplicate-lines (dup-lines-count (:src-dupmore src-map)))))))
+
+  (deftest cpd-no-duplicated-lines-test
+    (testing "Zero lines duplication"
+     (is (= 0 (:duplicate-lines (dup-lines-count (:src-nodup src-map)))))))
   
   (deftest ncss-line-count-test
     (testing "Line count: 16 -3 braces, -1 whitespace, -1 comment = 11"
-     (is (= 11.0 (:non-comment-lines (ncss-line-count src-linecount))))))
+     (is (= 11.0 (:non-comment-lines (ncss-line-count (:src-linecount src-map)))))))
+  
+  (deftest ncss-line-count-test2
+    (testing "Line count: 18 minus 3 comments = 15"
+     (is (= 15.0 (:non-comment-lines (ncss-line-count (:src-complexity src-map)))))))
 
   (deftest ncss-ccn-test
-    (testing "Cyclomatic complexity: "
-     (is (= 6 (:cyclomatic-complexity-total (ncss-line-count src-complexity))))
-     (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count src-complexity))))))
+    (testing "Cyclomatic complexity: simple 1, if,else 2, if,elseif,else 3"
+     (is (= 6 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
+     (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
-  (deftest ncss-test
-    (testing "Line count = 18 minus 3 comments = 15"
-     (is (= 15.0 (:non-comment-lines (ncss-line-count src-complexity))))))
+
+  
+  
   
 ; src not found
 
  
-(:cyclomatic-complexity-total (ncss-line-count src-complexity))
-
 (run-tests)
 
 
