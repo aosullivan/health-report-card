@@ -76,7 +76,7 @@
                        (ncss-line-count srcdir) 
                        (pmd-length srcdir))]  
     (println)
-    (println "Results: ")
+    (println "Results for: " srcdir)
     (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))]
       (pprint (merge results {:duplicate-lines-percentage  duplicate-lines-percentage})))))
 
@@ -85,4 +85,5 @@
     (print-results (first args))
     (println "Usage: healthreportcard <source folder>")))
   
+
 

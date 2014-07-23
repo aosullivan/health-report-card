@@ -42,9 +42,10 @@
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
 
 ;TODO 
+; format into report
 ; src not found
-; ccn / ncss to double, tidy up decimals
 ; save the xml for reference/debugging
 ; multithread
 ; package
 ; scm
+; check those duplications again - is there a better way
