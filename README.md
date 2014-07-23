@@ -1,14 +1,8 @@
 # heath-report-card
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure library to collect simple code metrics through static code analysis
 
 ## Usage
 
 FIXME
 
-## License
-
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.

@@ -33,7 +33,22 @@
       (def cpd-seq (xml-seq (xml/parse (capture-console "CPD" run-cpd))))    
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
     (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))))
-    
+
+
+(defn ncss-line-count [srcdir] 
+  (Locale/setDefault (Locale/US))
+  (defn to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))
+  
+  (letfn [(run-ncss [] (Javancss. (into-array ["-xml" "-all" srcdir]) Main/S_RCS_HEADER))]
+  (try
+    (def ncss-zip (zip/xml-zip (xml/parse (capture-console "NCSS" run-ncss))))    
+    (catch Exception e (do (log/warn e) ) (def cpd-seq nil) )))  
+  
+  { :cyclomatic-complexity-total (apply + (map read-string (zf/xml-> ncss-zip :functions :function :ccn zf/text))) 
+    :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
+    :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
+
+                                         
 ;Run NCSS
 ;(do
 ;  (Locale/setDefault (Locale/US))
