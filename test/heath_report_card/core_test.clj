@@ -6,11 +6,11 @@
   ;(def src "E:\\workspace-healthcheck\\CDR\\CDR\\JavaDev")
   (def src "E:\\workspace-sdlc\\javancss\\src\\main\\java")
   
-  (def src-map { :src-dup "E:\\workspace-sdlc\\test\\src\\main\\java\\duplication"
-                 :src-dupmore "E:\\workspace-sdlc\\test\\src\\main\\java\\duplicationx3"
-                 :src-nodup "E:\\workspace-sdlc\\test\\src\\main\\java\\noduplication"
-                 :src-linecount "E:\\workspace-sdlc\\test\\src\\main\\java\\linecount"
-                 :src-complexity "E:\\workspace-sdlc\\test\\src\\main\\java\\complexity" } )
+  (def src-map { :src-dup "duplication"
+                 :src-dupmore "duplicationx3"
+                 :src-nodup "noduplication"
+                 :src-linecount "linecount"
+                 :src-complexity "complexity" } )
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
@@ -44,17 +44,14 @@
   
 ; src not found
  
-(run-tests)
-
 
 ;TODO 
-; use let and letfn to descrease mem
-; save the xml for reference/debugging
 ; ccn / ncss to double, tidy up decimals
 ; when does it actually exec the commandline, cos everything is a def
 ; capture console to XML, not to byte array
 ; multithread
 ; update file sources to be local
+; save the xml for reference/debugging
 ; package
 ; scm
 
