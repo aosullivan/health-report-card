@@ -1,0 +1,7 @@
+/bin
+/target
+/classes
+.project
+.classpath
+.nrepl-port
+.lein-failures
