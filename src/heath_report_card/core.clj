@@ -28,9 +28,11 @@
   (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
   
   (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "10" "--format" "xml"])))]  
+    
     (try
       (def cpd-seq (xml-seq (xml/parse (capture-console "CPD" run-cpd))))    
       (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
+    
     {:duplicate-lines (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
 
 ;Run NCSS
@@ -41,11 +43,11 @@
           (to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))]
     (try
       (def ncss-zip (zip/xml-zip (xml/parse (capture-console "NCSS" run-ncss))))    
-      (catch Exception e (do (log/warn e) ) (def cpd-seq nil) )))  
+      (catch Exception e (do (log/warn e) ) (def cpd-seq nil) ))  
     
     { :cyclomatic-complexity-total (apply + (map read-string (zf/xml-> ncss-zip :functions :function :ccn zf/text))) 
       :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
-      :non-comment-lines-total (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
+      :non-comment-lines-total (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } )) 
 
 ;Run PMD
 (defn pmd-length [srcdir]
@@ -59,8 +61,8 @@
     (let [all-methods (loop-lengths "ExcessiveMethodLength")  
           all-classes (loop-lengths "ExcessiveClassLength")]
   
-  { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
-    :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
+    { :average-method-length (double (/ (apply + all-methods) (count all-methods) ))
+      :average-class-length (double (/ (apply + all-classes) (count all-classes) )) } )))
 
 (defn collect[srcdir]   
   (merge (cpd-line-count srcdir) 
