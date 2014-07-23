@@ -23,17 +23,15 @@
   
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines (dup-lines-count (:src-dup src-map)))))))
+     (is (= 10 (:duplicate-lines (cpd-line-count (:src-dup src-map)))))))
   
-  
-
    (deftest cpd-duplicated-morelines-test
     (testing "10 line duplicate in 3 files, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines (dup-lines-count (:src-dupmore src-map)))))))
+     (is (= 10 (:duplicate-lines (cpd-line-count (:src-dupmore src-map)))))))
 
   (deftest cpd-no-duplicated-lines-test
     (testing "Zero lines duplication"
-     (is (= 0 (:duplicate-lines (dup-lines-count (:src-nodup src-map)))))))
+     (is (= 0 (:duplicate-lines (cpd-line-count (:src-nodup src-map)))))))
   
   (deftest ncss-line-count-test
     (testing "Line count: 16 -3 braces, -1 whitespace, -1 comment = 11"
@@ -48,9 +46,9 @@
      (is (= 6 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
-
-  
-  
+;  (deftest pmd-method-length-test
+;    (testing "Average method length: 1+2+3/3 = 2"
+;     (is (= 6 (:average-method-length (ncss-line-count (:src-complexity src-map)))))
   
 ; src not found
 
@@ -65,6 +63,7 @@
 ; when does it actually exec the commandline, cos everything is a def
 ; unit test calculations on some real code
 ; capture console to XML, not to byte array
+; update file sources to be local
 ; multithread
 ; package
 ; scm

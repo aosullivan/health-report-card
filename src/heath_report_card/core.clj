@@ -25,7 +25,7 @@
   (ByteArrayInputStream. (.toByteArray bstream)))
 
 ;Run CPD
-(defn dup-lines-count [srcdir]
+(defn cpd-line-count [srcdir]
   (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
   
   (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "10" "--format" "xml"])))]  
@@ -48,15 +48,9 @@
     :cyclomatic-complexity-average (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn zf/text ))
     :non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text)) } ) 
 
-                                         
-;Run NCSS
-;(do
-;  (Locale/setDefault (Locale/US))
-;  (defn to-int [seq] (read-string (clojure.string/replace (first seq) #"," "")))
-;  (def ncss-zip (zip/xml-zip (xml/parse (capture-console "NCSS" '(Javancss. (into-array ["-xml" "-all" src]) Main/S_RCS_HEADER)))))
-;  (def cyclomatic-complexity (to-int (zf/xml-> ncss-zip :functions :function_averages :ccn  zf/text )))
-;  (def non-comment-lines (to-int (zf/xml-> ncss-zip :functions :ncss zf/text))))
-;
+
+
+
 ;Run PMD
 ;  
 ;  (def pmd-seq (xml-seq (xml/parse (capture-console "PMD" '(PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" src])))  )))    
