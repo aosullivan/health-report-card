@@ -70,27 +70,32 @@
       :class-length-average (format-num  (/ (apply + all-classes) (count all-classes) )) 
       :lines-total (apply + all-classes) } )))
 
-(defn print-results [srcdir]
-  (println "Running....")
-  (let [results (merge (cpd-line-count srcdir) 
-                       (ncss-line-count srcdir) 
-                       (pmd-length srcdir))]  
-    (println)
-    (println "Results for: " srcdir)
+
+(defn collect-metrics [srcdir]    
+    (let [results (merge (cpd-line-count srcdir) 
+                         (ncss-line-count srcdir) 
+                         (pmd-length srcdir))]       
+      (merge results
+             { :duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results))) })))
+
+(defn print-results [results]
+    (println)    
     (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))]
       (print-table [{"Metric" "Total lines", "Value" (:lines-total results), "T-shirt size" "MED"}])
       (println)
       (print-table [{"Metric" "Average method length", "Value" (:method-length-average results), "RAG Status" "Green"}
                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
                     {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
-                    {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Green"}])))
+                    {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}]))
   (println)
   (println))
 
-(defn -main [& args]   
+(defn -main [& args] 
+  (let [srcdir (first args)]
+  (println "Running for: " srcdir)
   (if args
-    (print-results (first args))
-    (println "Usage: healthreportcard <source folder>")))
+    (print-results (collect-metrics srcdir)  )
+    (println "Usage: healthreportcard <source folder>"))))
   
 
 
