@@ -16,11 +16,11 @@
   (let [bstream (ByteArrayOutputStream.)
         pstream (PrintStream. bstream)
         out (System/out)]
-    (log/info "Starting:" msg)
+    (log/debug "Starting:" msg)
     (System/setOut pstream)
     (f)
     (System/setOut out)
-    (log/info "Finished:" msg)
+    (log/debug "Finished:" msg)
     (ByteArrayInputStream. (.toByteArray bstream))))
 
 ;Run CPD 
@@ -71,14 +71,21 @@
       :lines-total (apply + all-classes) } )))
 
 (defn print-results [srcdir]
-  
+  (println "Running....")
   (let [results (merge (cpd-line-count srcdir) 
                        (ncss-line-count srcdir) 
                        (pmd-length srcdir))]  
     (println)
     (println "Results for: " srcdir)
     (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))]
-      (pprint (merge results {:duplicate-lines-percentage  duplicate-lines-percentage})))))
+      (print-table [{"Metric" "Total lines", "Value" (:lines-total results), "T-shirt size" "MED"}])
+      (println)
+      (print-table [{"Metric" "Average method length", "Value" (:method-length-average results), "RAG Status" "Green"}
+                    {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
+                    {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
+                    {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Green"}])))
+  (println)
+  (println))
 
 (defn -main [& args]   
   (if args
