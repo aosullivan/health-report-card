@@ -9,7 +9,8 @@
                  :src-dupmore "test\\java\\duplicationx3"
                  :src-nodup "test\\java\\noduplication"
                  :src-linecount "test\\java\\linecount"
-                 :src-complexity "test\\java\\complexity" } )
+                 :src-complexity "test\\java\\complexity"
+                 :src-bean "test\\java\\javabean"} )
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
@@ -36,13 +37,22 @@
      (is (= 6 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
-  (deftest pmd-method-length-test
+  (deftest pmd-length-test
     (testing "Average method length: 16/3 , Class length: 5 + 6 / 2 = 5.5"
      (is (= 5.33 (:method-length-average (pmd-length (:src-nodup src-map)))))
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
+  
+  (deftest pmd-javabean-test
+    (testing "Javabean methods: 3 lines, excluded from long checks"
+     ;(is (= 3 (:method-length-average (pmd-length (:src-bean src-map)))))
+     (is (= 0 (:long-method-length-average (pmd-length (:src-bean src-map)))))))
 
+  (pmd-length (:src-bean src-map))
+  
 ;TODO 
-; format into report
+; exclude short methods,
+; map to status
+; use ncss for method count?
 ; src not found
 ; save the xml for reference/debugging
 ; multithread
