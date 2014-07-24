@@ -10,7 +10,8 @@
                  :src-nodup "test\\java\\noduplication"
                  :src-linecount "test\\java\\linecount"
                  :src-complexity "test\\java\\complexity"
-                 :src-bean "test\\java\\javabean"} )
+                 :src-bean "test\\java\\bean"
+                 :src-bean-crlf "test\\java\\beanwithcrlf"} )
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
@@ -43,15 +44,20 @@
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
   
   (deftest pmd-javabean-test
-    (testing "Javabean methods: 3 lines, excluded from long checks"
-     ;(is (= 3 (:method-length-average (pmd-length (:src-bean src-map)))))
+    (testing "Javabean methods: 2 lines (it excludes method declaration), all excluded from 'long' methods"
+     (is (= 2.0 (:method-length-average (pmd-length (:src-bean src-map)))))
      (is (= 0 (:long-method-length-average (pmd-length (:src-bean src-map)))))))
+  
+  (deftest pmd-javabean-crlf-test
+    (testing "Javabean methods with crlf after method declaration: 3 lines (it excludes method declaration), all excluded from 'long' methods"
+     (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
+     (is (= 0 (:long-method-length-average (pmd-length (:src-bean-crlf src-map)))))))  
 
-  (pmd-length (:src-bean src-map))
   
 ;TODO 
 ; exclude short methods,
 ; map to status
+; show that tests are excluded
 ; use ncss for method count?
 ; src not found
 ; save the xml for reference/debugging

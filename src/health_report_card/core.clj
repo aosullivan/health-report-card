@@ -29,6 +29,9 @@
     (System/setOut pstream)
     (f)
     (System/setOut out)
+    
+    ;(println (.toString bstream))
+    
     (log/debug "Finished:" msg)
     (ByteArrayInputStream. (.toByteArray bstream))))
 
@@ -73,7 +76,7 @@
            (loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node))) ]
   
     (let [all-methods (loop-lengths "ExcessiveMethodLength")
-          all-long-methods (filter #(>= % 5) all-methods)
+          all-long-methods (filter #(> % 3) all-methods) 
           all-classes (loop-lengths "ExcessiveClassLength")]
       
     { :method-length-average (average all-methods)
