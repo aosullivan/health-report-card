@@ -11,7 +11,8 @@
                  :src-linecount "test\\java\\linecount"
                  :src-complexity "test\\java\\complexity"
                  :src-bean "test\\java\\bean"
-                 :src-bean-crlf "test\\java\\beanwithcrlf"} )
+                 :src-bean-crlf "test\\java\\beanwithcrlf"
+                 :src-methods "test\\java\\methodlength"} )
 
   (deftest cpd-duplicated-lines-test
     (testing "10 line duplicate, includes whitespace and braces"
@@ -38,30 +39,35 @@
      (is (= 6 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
-  (deftest pmd-length-test
-    (testing "Average method length: 16/3 , Class length: 5 + 6 / 2 = 5.5"
-     (is (= 5.33 (:method-length-average (pmd-length (:src-nodup src-map)))))
+  (deftest pmd-class-test
+    (testing "Class length: 5 + 6 / 2 = 5.5"
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
   
-  (deftest pmd-javabean-test
+  (deftest pmd-methodlength-test
     (testing "Javabean methods: 2 lines (it excludes method declaration), all excluded from 'long' methods"
      (is (= 2.0 (:method-length-average (pmd-length (:src-bean src-map)))))
      (is (= 0 (:long-method-length-average (pmd-length (:src-bean src-map)))))))
   
-  (deftest pmd-javabean-crlf-test
+  (deftest pmd-methodlength-with-return-after-declaration-test
     (testing "Javabean methods with crlf after method declaration: 3 lines (it excludes method declaration), all excluded from 'long' methods"
      (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
      (is (= 0 (:long-method-length-average (pmd-length (:src-bean-crlf src-map)))))))  
 
+  (deftest pmd-methodlength-2-test
+    (testing "Average = 3 + 8 + 4 / 3 = 5, excluding 2 short methods = 8 + 2 / 2 "
+     (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
+     (is (= 6.0 (:long-method-length-average (pmd-length (:src-methods src-map)))))))  
+  
+  
+  (pmd-methodlength-2-test)
   
 ;TODO 
-; exclude short methods,
 ; map to status
 ; show that tests are excluded
 ; use ncss for method count?
-; src not found
 ; save the xml for reference/debugging
 ; multithread
+; better null response handling, ; src not found
 ; package
 ; scm
 ; check those duplications again - is there a better way

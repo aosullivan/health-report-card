@@ -94,12 +94,13 @@
 
 (defn print-results [results]
     (println)    
-    (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))]
+    (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))
+          whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results))) ]
       (print-table [{"Metric" "Total lines", "Value" (:lines-total results), "T-shirt size" "MED"}
-                    {"Metric" "Total lines w/o braces, comments, whitespace", "Value" (:non-comment-lines-total results), "T-shirt size" "MED"}])
+                    {"Metric" "% Whitespace, braces only, comments", "Value" whitespace-percentage, "T-shirt size" "MED"}])
       (println)
       (print-table [{"Metric" "Average method length", "Value" (:method-length-average results), "RAG Status" "Green"}
-                    {"Metric" "Average long method length", "Value" (:long-method-length-average results), "RAG Status" "Green"}
+                    {"Metric" "Average method length (excluding methods <= 3 lines) ", "Value" (:long-method-length-average results), "RAG Status" "Green"}
                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
                     {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
                     {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}]))
