@@ -39,14 +39,23 @@
      (is (= 6.0 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
-  (deftest ncss-ccn-test "ccn exclusive total if all methods are oneliners = 0"
-    (is (= 0 (:cyclomatic-complexity-excl-small-total (ncss-line-count (:src-bean-crlf src-map))))))
+  (deftest ncss-ccn1-test "ccn exclusive avg if all methods are oneliners = 0"
+    (is (= 0.0 (:cyclomatic-complexity-excl-small-average (ncss-line-count (:src-bean-crlf src-map))))))
   
-  (deftest ncss-ccn-test2 "ccn exclusive total if non-oneliners have ccn 2 and 3"
-    (is (= 5.0 (:cyclomatic-complexity-excl-small-total (ncss-line-count (:src-complexity src-map))))))
-  
-  (deftest ncss-ccn-test3 "ccn exclusive average if non-oneliners have ccn 2 and 3"
+  (deftest ncss-ccn2-test "ccn exclusive average if non-oneliners have ccn 2 + 3 / 2 = 2.5"
     (is (= 2.5 (:cyclomatic-complexity-excl-small-average (ncss-line-count (:src-complexity src-map))))))
+  
+  (deftest ncss-mlen-test "method len avg for javabean = 1"
+    (is (= 2.0 (:method-len-average (ncss-line-count (:src-bean src-map))))))
+  
+  (deftest ncss-mlen2-test "method len avg for class 2 + 4 + 7 / 3 = 1"
+    (is (= 4.33 (:method-len-average (ncss-line-count (:src-complexity src-map))))))
+  
+  (deftest ncss-mlen-excl-test "method len excl one liners avg for javabean = 0"
+    (is (= 0.0 (:method-len-excl-small-average (ncss-line-count (:src-bean src-map)))))) 
+  
+  (deftest ncss-mlen-excl2-test "method len avg for class 4 + 7 / 2 = 5.5"
+    (is (= 5.5 (:method-len-excl-small-average (ncss-line-count (:src-complexity src-map))))))
   
   (deftest pmd-class-test
     (testing "Class length: 5 + 6 / 2 = 5.5"
@@ -71,7 +80,9 @@
 ;(run-tests)
   
 ;TODO 
+;remove 0.0
 ; methodlength based on ncss, not pmd
+; use avg on ccn/ncss calcs
 ; whitespace % broken on tracer - add tests
 ; map to status
 ; show that tests are excluded

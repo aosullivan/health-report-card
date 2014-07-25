@@ -25,6 +25,9 @@
 (defn to-inputstream [outputstream] "InputStream to OutputStream"
     (ByteArrayInputStream. (.toByteArray outputstream)) )
 
+(defn zero-if-nil [x] 
+  (if (nil? x) 0 x))
+
 (defn capture-console [msg f] "Read contents of System.out into a stream"
   (let [bstream (ByteArrayOutputStream.)
         pstream (PrintStream. bstream)
@@ -67,20 +70,18 @@
       (catch Exception e (do (log/warn e) ) (def cpd-seq nil) ))  
     
     (let [ccn-total (sax/query "sum(//function/ccn)" ncss-xml)
-          ccn-excl-small-total (sax/query "sum(//function[ncss>2]/ccn)" ncss-xml)
-          ccn-excl-small-count (sax/query "count(//function[ncss>2]/ccn)" ncss-xml)
+          ccn-excl-small-average (sax/query "avg(//function[ncss>2]/ccn)" ncss-xml)
           ccn-average (sax/query "distinct-values(//function_averages/ccn)" ncss-xml)
+          method-len-average (sax/query "avg(//function/ncss)" ncss-xml)
+          method-len-excl-small-average (sax/query "avg(//function[ncss>2]/ncss)" ncss-xml)
           ncss-total (sax/query "distinct-values(//functions/ncss)" ncss-xml)]
     
       { :cyclomatic-complexity-total ccn-total
         :cyclomatic-complexity-average (read-string ccn-average)
-        :cyclomatic-complexity-excl-small-total ccn-excl-small-total
-        :cyclomatic-complexity-excl-small-average (if (zero? ccn-excl-small-count) 0 (format-num (/ ccn-excl-small-total ccn-excl-small-count)))
+        :cyclomatic-complexity-excl-small-average (format-num (zero-if-nil ccn-excl-small-average))
+        :method-len-average (format-num (zero-if-nil method-len-average))
+        :method-len-excl-small-average (format-num (zero-if-nil method-len-excl-small-average))
         :non-comment-lines-total (read-string ncss-total) }))) 
-
-;(sax/query "sum(//function[ncss>2]/ccn)" ncss-xml)
-
-;(sax/query "//function/ncss" ncss-xml)
 
  ;Run PMD
  (defn pmd-length [srcdir]
