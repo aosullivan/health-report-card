@@ -59,7 +59,7 @@
      (is (= 6.0 (:long-method-length-average (pmd-length (:src-methods src-map)))))))  
   
   
-  (pmd-methodlength-2-test)
+  (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))
   
 ;TODO 
 ; map to status
@@ -68,6 +68,7 @@
 ; save the xml for reference/debugging
 ; multithread
 ; better null response handling, ; src not found
+; remove defs
 ; package
 ; scm
 ; check those duplications again - is there a better way
