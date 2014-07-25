@@ -22,10 +22,10 @@
     0
    (format-num (/ (apply + seq) (count seq)))))
 
-(defn to-inputstream [outputstream] 
+(defn to-inputstream [outputstream] "InputStream to OutputStream"
     (ByteArrayInputStream. (.toByteArray outputstream)) )
 
-(defn capture-console [msg f] 
+(defn capture-console [msg f] "Read contents of System.out into a stream"
   (let [bstream (ByteArrayOutputStream.)
         pstream (PrintStream. bstream)
         out (System/out)]
@@ -34,7 +34,7 @@
     (f)
     (System/setOut out)
     
-    ;(println (.toString bstream))
+    ;(println (.toString bstream)) ;debug
     
     (log/debug "Finished:" msg)
     bstream))
@@ -66,10 +66,21 @@
       (def ncss-xml (sax/compile-xml(.toString (capture-console "NCSS" run-ncss))))    
       (catch Exception e (do (log/warn e) ) (def cpd-seq nil) ))  
     
-    { :cyclomatic-complexity-total (sax/query "sum(//function/ccn)" ncss-xml)
-      :cyclomatic-complexity-exclusive-total (sax/query "sum(//function[ncss<=3]/css)" ncss-xml) 
-      :cyclomatic-complexity-average (read-string (sax/query "distinct-values(//function_averages/ccn)" ncss-xml))
-      :non-comment-lines-total (read-string (sax/query "distinct-values(//functions/ncss)" ncss-xml)) })) 
+    (let [ccn-total (sax/query "sum(//function/ccn)" ncss-xml)
+          ccn-excl-small-total (sax/query "sum(//function[ncss>2]/ccn)" ncss-xml)
+          ccn-excl-small-count (sax/query "count(//function[ncss>2]/ccn)" ncss-xml)
+          ccn-average (sax/query "distinct-values(//function_averages/ccn)" ncss-xml)
+          ncss-total (sax/query "distinct-values(//functions/ncss)" ncss-xml)]
+    
+      { :cyclomatic-complexity-total ccn-total
+        :cyclomatic-complexity-average (read-string ccn-average)
+        :cyclomatic-complexity-excl-small-total ccn-excl-small-total
+        :cyclomatic-complexity-excl-small-average (if (zero? ccn-excl-small-count) 0 (format-num (/ ccn-excl-small-total ccn-excl-small-count)))
+        :non-comment-lines-total (read-string ncss-total) }))) 
+
+;(sax/query "sum(//function[ncss>2]/ccn)" ncss-xml)
+
+;(sax/query "//function/ncss" ncss-xml)
 
  ;Run PMD
  (defn pmd-length [srcdir]
@@ -112,6 +123,7 @@
                      {"Metric" "Average method length (excluding methods <= 3 lines) ", "Value" (:long-method-length-average results), "RAG Status" "Green"}
                      {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
                      {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
+                     {"Metric" "Average cyclomatic complexity (excluding 1 line methods) ", "Value" (:cyclomatic-complexity-excl-small-average results), "RAG Status" "Green"}
                      {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}                    ]))
    (println)
    (println))

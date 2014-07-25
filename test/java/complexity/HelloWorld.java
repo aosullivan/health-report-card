@@ -1,15 +1,15 @@
 package java.complexity;
 public class HelloWorld {
-	//CC 1 lines 2
+	//ccn 1 ncss 2 (declaration and body)
 	public int notcomplex() {
 		return 1;
 	}
-	//CC 2 lines 3
+	//ccn 2 ncss 4 (dec, if, then, return)
 	public int complex(int a) {
 		if (a < 0) a += 2;
 		return 0;
 	}
-	//CC 3 lines 
+	//ccn 3 ncss 7  (dec, if, then, else, if, then, return)
 	public int verycomplex(int a) {
 		if (a > 0) a -= 2; 
 		else if (a < 1) a += 2;

@@ -39,6 +39,15 @@
      (is (= 6.0 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
+  (deftest ncss-ccn-test "ccn exclusive total if all methods are oneliners = 0"
+    (is (= 0 (:cyclomatic-complexity-excl-small-total (ncss-line-count (:src-bean-crlf src-map))))))
+  
+  (deftest ncss-ccn-test2 "ccn exclusive total if non-oneliners have ccn 2 and 3"
+    (is (= 5.0 (:cyclomatic-complexity-excl-small-total (ncss-line-count (:src-complexity src-map))))))
+  
+  (deftest ncss-ccn-test3 "ccn exclusive average if non-oneliners have ccn 2 and 3"
+    (is (= 2.5 (:cyclomatic-complexity-excl-small-average (ncss-line-count (:src-complexity src-map))))))
+  
   (deftest pmd-class-test
     (testing "Class length: 5 + 6 / 2 = 5.5"
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
@@ -58,15 +67,18 @@
      (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
      (is (= 6.0 (:long-method-length-average (pmd-length (:src-methods src-map)))))))  
   
-  
-(run-tests)
+
+;(run-tests)
   
 ;TODO 
+; methodlength based on ncss, not pmd
+; whitespace % broken on tracer - add tests
 ; map to status
 ; show that tests are excluded
 ; use ncss for method count?
 ; save the xml for reference/debugging
 ; multithread
+; split up all tests into 1 line
 ; better null response handling, ; src not found
 ; remove defs
 ; package
