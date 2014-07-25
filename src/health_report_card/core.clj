@@ -81,7 +81,7 @@
         :cyclomatic-complexity-excl-small-average (format-num (zero-if-nil ccn-excl-small-average))
         :method-len-average (format-num (zero-if-nil method-len-average))
         :method-len-excl-small-average (format-num (zero-if-nil method-len-excl-small-average))
-        :non-comment-lines-total (read-string ncss-total) }))) 
+        :non-comment-lines-total (read-string (clojure.string/replace ncss-total #"," "")) }))) 
 
  ;Run PMD
  (defn pmd-length [srcdir]
@@ -95,14 +95,10 @@
      (length [node] (- (read-string (:endline (:attrs node))) (read-string (:beginline (:attrs node)))))
      (loop-lengths [rule] (for [node pmd-seq :when (is-included? node rule) ]  (length node))) ]
 
-     (let [all-methods (loop-lengths "ExcessiveMethodLength")
-           all-long-methods (filter #(> % 3) all-methods) 
-           all-classes (loop-lengths "ExcessiveClassLength")]
+     (let [all-classes (loop-lengths "ExcessiveClassLength")]
 
-     { :method-length-average (average all-methods)
-       :long-method-length-average (average all-long-methods)
-       :class-length-average (average all-classes) 
-       :lines-total (format-num (apply + all-classes)) } )))
+       { :class-length-average (average all-classes) 
+         :lines-total (format-num (apply + all-classes)) } )))
 
 
  (defn collect-metrics [srcdir]    
@@ -120,11 +116,11 @@
                      {"Metric" "% Whitespace, braces only, comments", "Value" whitespace-percentage, "T-shirt size" ""}
                      {"Metric" "Total lines excl. whitespace etc.", "Value" (:non-comment-lines-total results), "T-shirt size" "MED"}])
        (println)
-       (print-table [{"Metric" "Average method length", "Value" (:method-length-average results), "RAG Status" "Green"}
-                     {"Metric" "Average method length (excluding methods <= 3 lines) ", "Value" (:long-method-length-average results), "RAG Status" "Green"}
-                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
+       (print-table [{"Metric" "Average method length", "Value" (:method-len-average results), "RAG Status" "Green"}
+                     {"Metric" "Average method length (excluding 1 line methods) ", "Value" (:method-len-excl-small-average results), "RAG Status" "Green"}
                      {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
                      {"Metric" "Average cyclomatic complexity (excluding 1 line methods) ", "Value" (:cyclomatic-complexity-excl-small-average results), "RAG Status" "Green"}
+                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
                      {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}                    ]))
    (println)
    (println))

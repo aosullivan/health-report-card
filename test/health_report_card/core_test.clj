@@ -61,36 +61,21 @@
     (testing "Class length: 5 + 6 / 2 = 5.5"
      (is (= 14.0 (:class-length-average (pmd-length (:src-nodup src-map)))))))
   
-  (deftest pmd-methodlength-test
-    (testing "Javabean methods: 2 lines (it excludes method declaration), all excluded from 'long' methods"
-     (is (= 2.0 (:method-length-average (pmd-length (:src-bean src-map)))))
-     (is (= 0 (:long-method-length-average (pmd-length (:src-bean src-map)))))))
-  
-  (deftest pmd-methodlength-with-return-after-declaration-test
-    (testing "Javabean methods with crlf after method declaration: 3 lines (it excludes method declaration), all excluded from 'long' methods"
-     (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
-     (is (= 0 (:long-method-length-average (pmd-length (:src-bean-crlf src-map)))))))  
+  ;test lines total
 
-  (deftest pmd-methodlength-2-test
-    (testing "Average = 3 + 8 + 4 / 3 = 5, excluding 2 short methods = 8 + 2 / 2 "
-     (is (= 3.0 (:method-length-average (pmd-length (:src-bean-crlf src-map)))))
-     (is (= 6.0 (:long-method-length-average (pmd-length (:src-methods src-map)))))))  
-  
 
 ;(run-tests)
   
 ;TODO 
-;remove 0.0
-; methodlength based on ncss, not pmd
-; use avg on ccn/ncss calcs
-; whitespace % broken on tracer - add tests
+; remove 0.0
+; remove duplication
 ; map to status
 ; show that tests are excluded
-; use ncss for method count?
-; save the xml for reference/debugging
+; print xml to console for reference/debugging
 ; multithread
 ; split up all tests into 1 line
-; better null response handling, ; src not found
+; better null response handling, 
+; src not found
 ; remove defs
 ; package
 ; scm
