@@ -66,10 +66,10 @@
       (def ncss-xml (sax/compile-xml(.toString (capture-console "NCSS" run-ncss))))    
       (catch Exception e (do (log/warn e) ) (def cpd-seq nil) ))  
     
-    { :cyclomatic-complexity-total ( format-num (sax/query "sum(//function/ccn)" ncss-xml))
-      :cyclomatic-complexity-exclusive-total ( format-num (sax/query "sum(//function[ncss<=3]/css)" ncss-xml)) 
-      :cyclomatic-complexity-average ( to-int   (sax/query "distinct-values(//function_averages/ccn)" ncss-xml))
-      :non-comment-lines-total ( to-int (sax/query "distinct-values(//functions/ncss)" ncss-xml)) })) 
+    { :cyclomatic-complexity-total (sax/query "sum(//function/ccn)" ncss-xml)
+      :cyclomatic-complexity-exclusive-total (sax/query "sum(//function[ncss<=3]/css)" ncss-xml) 
+      :cyclomatic-complexity-average (read-string (sax/query "distinct-values(//function_averages/ccn)" ncss-xml))
+      :non-comment-lines-total (read-string (sax/query "distinct-values(//functions/ncss)" ncss-xml)) })) 
 
  ;Run PMD
  (defn pmd-length [srcdir]

@@ -26,17 +26,17 @@
     (testing "Zero lines duplication"
      (is (= 0 (:duplicate-lines-total (cpd-line-count (:src-nodup src-map)))))))
   
-  (deftest ncss-line-count-test
+  (deftest ncss-linecount-test
     (testing "Line count: 16 -3 braces, -1 whitespace, -1 comment = 11"
      (is (= 11.0 (:non-comment-lines-total (ncss-line-count (:src-linecount src-map)))))))
   
-  (deftest ncss-line-count-test2
+  (deftest ncss-linecount2-test
     (testing "Line count: 18 minus 3 comments = 15"
      (is (= 15.0 (:non-comment-lines-total (ncss-line-count (:src-complexity src-map)))))))
 
   (deftest ncss-ccn-test
     (testing "Cyclomatic complexity: simple 1, if,else 2, if,elseif,else 3"
-     (is (= 6 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
+     (is (= 6.0 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
   (deftest pmd-class-test
@@ -59,7 +59,7 @@
      (is (= 6.0 (:long-method-length-average (pmd-length (:src-methods src-map)))))))  
   
   
-  (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))
+(run-tests)
   
 ;TODO 
 ; map to status
