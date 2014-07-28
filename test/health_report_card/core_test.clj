@@ -74,7 +74,6 @@
 ; print xml to console for reference/debugging
 ; multithread
 ; split up all tests into 1 line
-; better null response handling, 
 ; src not found
 ; remove defs
 ; package

@@ -37,7 +37,7 @@
     (f)
     (System/setOut out)
     
-    ;(println (.toString bstream)) ;debug
+    (println (.toString bstream)) ;debug
     
     (log/debug "Finished:" msg)
     bstream))
@@ -49,15 +49,16 @@
 (defn cpd-line-count [srcdir]
   (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
   
-  (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "10" "--format" "xml" "--encoding" "utf-8"])))]  
+  (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "20" "--format" "xml" "--encoding" "utf-8"])))]  
     
-    (try
-      (def cpd-seq (xml-seq (xml/parse (capture-console-in "CPD" run-cpd))))    
-      (catch Exception e (do (log/warn e) (log/info "No duplications found") ) (def cpd-seq nil) )) 
-    
+      (let [xml-stream (capture-console-in "CPD" run-cpd)]
+         (if (> (.available xml-stream) 0)
+          (def cpd-seq (xml-seq (xml/parse xml-stream)))
+          (def cpd-seq nil))))
+                           
     ; Duplicates are 10 tokens and 5 or more lines, including whitespace
-    {:duplicate-lines-total (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
-
+    ;{:duplicate-lines-total (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
+    {:duplicate-lines-total (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } )
 
 ;Run NCSS
 (defn ncss-line-count [srcdir] 
@@ -111,17 +112,17 @@
  (defn print-results [results]
      (println)    
      (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))
-           whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results))) ]
+           whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results))) 
+           method-len (str  (:method-len-average results) " [" (:method-len-excl-small-average results) "]") 
+           ccn (str (:cyclomatic-complexity-average results) " [" (:cyclomatic-complexity-excl-small-average results) "]")]
        (print-table [{"Metric" "Total lines", "Value" (:lines-total results), "T-shirt size" ""}
                      {"Metric" "% Whitespace, braces only, comments", "Value" whitespace-percentage, "T-shirt size" ""}
                      {"Metric" "Total lines excl. whitespace etc.", "Value" (:non-comment-lines-total results), "T-shirt size" "MED"}])
        (println)
-       (print-table [{"Metric" "Average method length", "Value" (:method-len-average results), "RAG Status" "Green"}
-                     {"Metric" "Average method length (excluding 1 line methods) ", "Value" (:method-len-excl-small-average results), "RAG Status" "Green"}
-                     {"Metric" "Average cyclomatic complexity", "Value" (:cyclomatic-complexity-average results), "RAG Status" "Green"}
-                     {"Metric" "Average cyclomatic complexity (excluding 1 line methods) ", "Value" (:cyclomatic-complexity-excl-small-average results), "RAG Status" "Green"}
-                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"}
-                     {"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}                    ]))
+       (print-table [{"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "Red"}
+                     {"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "Green"} 
+                     {"Metric" "Average method length [excluding single-line methods]", "Value" method-len, "RAG Status" "Green"}
+                     {"Metric" "Average cyclomatic complexity [excluding single-line methods]", "Value" ccn, "RAG Status" "Green"}]))
    (println)
    (println))
 
@@ -129,7 +130,7 @@
    (let [srcdir (first args)]
    (println "Scanning: " srcdir)
   (if args
-           (print-results (collect-metrics srcdir)  )
+    (print-results (collect-metrics srcdir)  )
     (println "Usage: healthreportcard <source folder>"))))
   
 

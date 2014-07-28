@@ -8,6 +8,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [javancss/javancss "30.51"]
                  [net.sourceforge.pmd/pmd "5.1.2"]
+                 [com.puppycrawl.tools/checkstyle "5.7"]
                  [org.clojure/tools.logging "0.3.0"]
                  [org.clojure/data.xml "0.0.7"]
                  [clojure-saxon "0.9.4"] 

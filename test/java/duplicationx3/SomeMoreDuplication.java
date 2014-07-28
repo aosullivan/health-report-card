@@ -11,4 +11,6 @@ public class SomeMoreDuplication {
 		
 		return a;
 	}
+	
+	public void notUniqueFromHere(){};
 }
