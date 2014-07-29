@@ -37,7 +37,7 @@
     (f)
     (System/setOut out)
     
-    (println (.toString bstream)) ;debug
+    ;(println (.toString bstream)) ;debug
     
     (log/debug "Finished:" msg)
     bstream))
