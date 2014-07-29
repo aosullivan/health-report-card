@@ -15,12 +15,12 @@
                  :src-methods "test\\java\\methodlength"} )
 
   (deftest cpd-duplicated-lines-test
-    (testing "10 line duplicate, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
+    (testing "12 line with 20 token duplicate, from open brace to close class brace"
+     (is (= 12 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
   
    (deftest cpd-duplicated-morelines-test
-    (testing "10 line duplicate in 3 files, includes whitespace and braces"
-     (is (= 10 (:duplicate-lines-total (cpd-line-count (:src-dupmore src-map)))))))
+    (testing "10 line duplicate in 2 files, 9 line duplicate in 2 files"
+     (is (= 19 (:duplicate-lines-total (cpd-line-count (:src-dupmore src-map)))))))
 
   (deftest cpd-no-duplicated-lines-test
     (testing "Zero lines duplication"
@@ -34,9 +34,12 @@
     (testing "Line count: 18 minus 3 comments = 15"
      (is (= 15.0 (:non-comment-lines-total (ncss-line-count (:src-complexity src-map)))))))
 
-  (deftest ncss-ccn-test
+  (deftest ncss-ccn-total-test
     (testing "Cyclomatic complexity: simple 1, if,else 2, if,elseif,else 3"
-     (is (= 6.0 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))
+     (is (= 6.0 (:cyclomatic-complexity-total (ncss-line-count (:src-complexity src-map)))))))
+  
+  (deftest ncss-ccn-average-test
+    (testing "Cyclomatic complexity: simple 1, if,else 2, if,elseif,else 3"
      (is (= 2.0 (:cyclomatic-complexity-average (ncss-line-count (:src-complexity src-map)))))))
   
   (deftest ncss-ccn1-test "ccn exclusive avg if all methods are oneliners = 0"

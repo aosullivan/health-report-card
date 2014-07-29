@@ -57,8 +57,8 @@
           (def cpd-seq nil))))
                            
     ; Duplicates are 10 tokens and 5 or more lines, including whitespace
-    ;{:duplicate-lines-total (apply + (filter #(>= % 5) (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node)))))) } ))
     {:duplicate-lines-total (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } )
+
 
 ;Run NCSS
 (defn ncss-line-count [srcdir] 
