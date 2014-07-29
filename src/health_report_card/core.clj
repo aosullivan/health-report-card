@@ -84,7 +84,7 @@
   
   ;Run PMD
   (defn pmd-length [srcdir]
-    (letfn [(run-pmd [] (PMD/main (into-array ["-R" "./rulesets/ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
+    (letfn [(run-pmd [] (PMD/main (into-array ["-R" "ruleset.xml" "-f" "xml" "-d" srcdir]))) ] 
   
       (let [xml-stream (capture-console-in "PMD" run-pmd)]
          (if (> (.available xml-stream) 0)

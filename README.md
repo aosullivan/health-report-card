@@ -2,7 +2,7 @@
 
 A Clojure library to collect simple code metrics through static code analysis.
 
-java -cp target\heath-report-card-0.2.0-SNAPSHOT-standalone.jar  health_report_card.core  <src>
+java -jar  \target\health-report-card-0.2.1-SNAPSHOT-standalone.jar  <src>
 
 ## Duplication
 Duplication is detected by simple textual comparison.
