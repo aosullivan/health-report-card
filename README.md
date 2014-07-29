@@ -2,6 +2,8 @@
 
 A Clojure library to collect simple code metrics through static code analysis.
 
+java -cp target\heath-report-card-0.2.0-SNAPSHOT-standalone.jar  health_report_card.core  <src>
+
 ## Duplication
 Duplication is detected by simple textual comparison.
 
@@ -44,3 +46,4 @@ Note that else, default, and finally don't increment the CCN value any further. 
 ## Method length and CCN excluding one line methods
 We also report the average values of method length and CCN when all one-line methods are excluded. More precisely, we exclude methods where NCSS <= 2. This is in order to discount classes like Javabeans and DTO's which have a high proportion of methods with no logic.
 
+Interface method declarations have an NCSS of 1 and a CCN of 1.  These are included in the averages, but excluded from one-liner averages.

@@ -10,8 +10,9 @@ public class HelloWorld {
 	
 	public double doCalc(){
 		
-		//Note that comments are also counted as duplication
-		//50 tokens count as a duplicate block
+		//Some duplication
+		//Some duplication
+		//Some duplication
 		double a = 100;
 		a++;
 		a--;

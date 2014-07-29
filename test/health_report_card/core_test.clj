@@ -16,7 +16,7 @@
 
   (deftest cpd-duplicated-lines-test
     (testing "12 line with 20 token duplicate, from open brace to close class brace"
-     (is (= 12 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
+     (is (= 13 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
   
    (deftest cpd-duplicated-morelines-test
     (testing "10 line duplicate in 2 files, 9 line duplicate in 2 files"

@@ -37,7 +37,7 @@
       (f)
       (System/setOut out)
       
-      (println (.toString bstream)) ;debug
+      ;(println (.toString bstream)) ;debug
       
       (log/debug "Finished:" msg)
       bstream))
@@ -49,7 +49,7 @@
   (defn cpd-line-count [srcdir]
     (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
     
-    (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "50" "--format" "xml" "--encoding" "utf-8"])))]  
+    (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "20" "--format" "xml" "--encoding" "utf-8"])))]  
       (let [xml-stream (capture-console-in "CPD" run-cpd)]
          (if (> (.available xml-stream) 0)
           (def cpd-seq (xml-seq (xml/parse xml-stream)))
