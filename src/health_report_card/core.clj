@@ -44,7 +44,8 @@
     (to-inputstream (capture-console msg f debug)))
 
   ;Run CPD 
-  (defn cpd-line-count [srcdir debug]
+  (defn cpd-line-count ([srcdir] (cpd-line-count srcdir false))
+                       ([srcdir debug] 
     (System/setProperty (CPDCommandLineInterface/NO_EXIT_AFTER_RUN) "true" )
     
     (letfn [(run-cpd [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "20" "--format" "xml" "--encoding" "utf-8"])))]  
@@ -53,10 +54,11 @@
           (def cpd-seq (xml-seq (xml/parse xml-stream)))
           (def cpd-seq nil))))
                            
-      {:duplicate-lines-total (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } )
+      {:duplicate-lines-total (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
 
   ;Run NCSS
-  (defn ncss-line-count [srcdir debug] 
+  (defn ncss-line-count ([srcdir] (ncss-line-count srcdir false))
+                        ([srcdir debug] 
     (Locale/setDefault (Locale/US))
     
     (letfn [(run-ncss [] (Javancss. (into-array ["-xml" "-all" "-encoding" "utf-8" srcdir]) Main/S_RCS_HEADER))
@@ -87,7 +89,7 @@
           :class-len-violation-count (format-num (zero-if-nil class-len-violation-count))
           :class-len-average (format-num (zero-if-nil class-len-average))
           :package-class-violation-count (format-num (zero-if-nil package-class-violation-count))
-          :non-comment-lines-total (read-string (clojure.string/replace ncss-total #"," "")) }))) 
+          :non-comment-lines-total (read-string (clojure.string/replace ncss-total #"," "")) }))) )
 
   
   ;Run PMD
