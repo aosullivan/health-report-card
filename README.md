@@ -7,10 +7,13 @@ java -jar  \target\health-report-card-0.2.1-SNAPSHOT-standalone.jar  <src>
 ## Duplication
 Duplication is detected by simple textual comparison.
 
-## Class Length
+## Average Class Length
 Number of lines, including all whitespace and comments, from the class declaration to the final closing brace.  
 
 ## Average Method Length
+
+http://javancss.codehaus.org/specification.html
+
 Length is measured in terms of non-commenting source statments (NCSS). NCSS is roughly equivalent to counting ';' and '{' characters in Java source files.
 
 http://www.kclee.de/clemens/java/javancss/#specification
@@ -29,7 +32,7 @@ Example:
 	}
 
 
-## Cyclomatic Complexity Number (CCN)
+## Average Cyclomatic Complexity Number (CCN)
 CCN is also know as McCabe Metric. Each method has a minimum value of 1 per default. Whenever the control flow of a method splits, the CCN number gets incremented:
 
 if

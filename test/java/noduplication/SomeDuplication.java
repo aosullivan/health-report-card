@@ -1,6 +1,6 @@
 package java.noduplication;
 
-
+//NCSS4
 public class SomeDuplication {
 
 	public String doX(){
