@@ -2,19 +2,19 @@
 
 A Clojure library to collect simple code metrics through static code analysis.
 
-java -jar  \target\health-report-card-0.2.1-SNAPSHOT-standalone.jar  <src>
+java -jar  <jar>.jar  [-d --debug] <Java source folder>
 
-## Duplication
-Duplication is detected by simple textual comparison.
+Add in best practices
 
-## Average Class Length
-Number of lines, including all whitespace and comments, from the class declaration to the final closing brace.  
+## Duplicated lines
+Duplication is detected by simple textual comparison of tokens using PMD/CPD.
 
-## Average Method Length
+## Methods with \# statements > 30
+Number of methods with more than 30 statements
 
-http://javancss.codehaus.org/specification.html
+Statements are roughly equivalent to counting ';' and '{' characters in Java source files.
 
-Length is measured in terms of non-commenting source statments (NCSS). NCSS is roughly equivalent to counting ';' and '{' characters in Java source files.
+Statements counted by NCSS: http://javancss.codehaus.org/specification.html
 
 http://www.kclee.de/clemens/java/javancss/#specification
 
@@ -32,21 +32,24 @@ Example:
 	}
 
 
-## Average Cyclomatic Complexity Number (CCN)
+## Methods with Cyclomatic Complexity > 10
 CCN is also know as McCabe Metric. Each method has a minimum value of 1 per default. Whenever the control flow of a method splits, the CCN number gets incremented:
 
-if
-for
-while
-case
-catch
-&&
-||
-?
+if  \n
+for \n
+while \n
+case \n
+catch \n
+&& \n
+|| \n
+? \n
 
 Note that else, default, and finally don't increment the CCN value any further. On the other hand, a simple method with a switch statement and a huge block of case statements can have a surprisingly high CCN value (still it has the same value when converting a switch block to an equivalent sequence of if statements). 
 
-## Method length and CCN excluding one line methods
-We also report the average values of method length and CCN when all one-line methods are excluded. More precisely, we exclude methods where NCSS <= 2. This is in order to discount classes like Javabeans and DTO's which have a high proportion of methods with no logic.
+## Methods > 3 Parameters
 
-Interface method declarations have an NCSS of 1 and a CCN of 1.  These are included in the averages, but excluded from one-liner averages.
+Self explanatory
+
+## Packages with classes > 25
+
+## Classes with statements > 300

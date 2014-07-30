@@ -67,28 +67,22 @@
         (def ncss-xml (sax/compile-xml(.toString (capture-console "NCSS" run-ncss debug))))    
         (catch Exception e (do (log/warn e) ) (def cpd-seq nil) ))  
       
-      (let [ccn-total (sax/query "sum(//function/ccn)" ncss-xml)
-            ccn-excl-small-average (sax/query "avg(//function[ncss>2]/ccn)" ncss-xml)
-            ccn-average (sax/query "distinct-values(//function_averages/ccn)" ncss-xml)
-            method-len-average (sax/query "avg(//function/ncss)" ncss-xml)
-            method-len-excl-small-average (sax/query "avg(//function[ncss>2]/ncss)" ncss-xml)
-            methods-lines-violation-count (sax/query "count(//function[ncss>30])" ncss-xml)
+      (let [methods-len-violation-count (sax/query "count(//function[ncss>30])" ncss-xml)
             methods-ccn-violation-count (sax/query "count(//function[ccn>10])" ncss-xml)
             class-len-violation-count (sax/query "count(//object[ncss>300])" ncss-xml)
-            class-len-average (sax/query "avg(//object/ncss)" ncss-xml)
             package-class-violation-count (sax/query "count(//package[classes>25])" ncss-xml)
+            methods-total (sax/query "count(//function)" ncss-xml)
+            class-total (sax/query "count(//object)" ncss-xml)
+            packages-total (sax/query "count(//package)" ncss-xml)
             ncss-total (sax/query "distinct-values(//functions/ncss)" ncss-xml)]
       
-        { :cyclomatic-complexity-total ccn-total
-          :cyclomatic-complexity-average (read-string ccn-average)
-          :cyclomatic-complexity-excl-small-average (format-num (zero-if-nil ccn-excl-small-average))
-          :method-len-average (format-num (zero-if-nil method-len-average))
-          :method-len-excl-small-average (format-num (zero-if-nil method-len-excl-small-average))
-          :methods-lines-violation-count (format-num (zero-if-nil methods-lines-violation-count))
+        { :methods-len-violation-count (format-num (zero-if-nil methods-len-violation-count))
           :methods-ccn-violation-count (format-num (zero-if-nil methods-ccn-violation-count))
           :class-len-violation-count (format-num (zero-if-nil class-len-violation-count))
-          :class-len-average (format-num (zero-if-nil class-len-average))
           :package-class-violation-count (format-num (zero-if-nil package-class-violation-count))
+          :methods-total (format-num (zero-if-nil methods-total))
+          :class-total (format-num (zero-if-nil class-total)) 
+          :packages-total (format-num (zero-if-nil packages-total)) 
           :non-comment-lines-total (read-string (clojure.string/replace ncss-total #"," "")) }))) )
 
   
@@ -109,38 +103,34 @@
               method-param-violations (loop-lengths "ExcessiveParameterList")]
     
           { :method-param-violation-count (format-num (count method-param-violations))
-            ;:class-len-violation-count (format-num (count (filter #(> % 500) all-classes)))
-            ;:class-length-average (average all-classes) 
             :lines-total (format-num (apply + all-classes)) } )))
 
 
   (defn collect-metrics [srcdir debug]    
-      (let [results (merge (cpd-line-count srcdir debug) 
+      (merge (cpd-line-count srcdir debug) 
                     (ncss-line-count srcdir debug) 
-                    (pmd-length srcdir))]       
-        (merge results
-               { :duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results))) }))) ;move to up
+                    (pmd-length srcdir)))       
 
   (defn print-results [results]
     (println)    
-    (let [;duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))
-          whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results))) 
-          ;method-len (str  (:method-len-average results) " [" (:method-len-excl-small-average results) "]") 
-          ;ccn (str (:cyclomatic-complexity-average results) " [" (:cyclomatic-complexity-excl-small-average results) "]")
-          ]
+    (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))
+          methods-violating-len-percentage (format-num (/ (* 100 (:methods-len-violation-count results)) (:methods-total results)))
+          methods-violating-ccn-percentage (format-num (/ (* 100 (:methods-ccn-violation-count results)) (:methods-total results)))
+          methods-violating-params-percentage (format-num (/ (* 100 (:method-param-violation-count results)) (:methods-total results)))
+          classes-violating-len-percentage (format-num (/ (* 100 (:class-len-violation-count results)) (:class-total results)))
+          packages-violating-size-percentage (format-num (/ (* 100 (:package-class-violation-count results)) (:packages-total results)))
+          whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results)))]
+      
+      
       (print-table [{"Metric" "Total lines",      "Value" (:lines-total results),             "T-shirt size" ""}
                     {"Metric" "Total statements", "Value" (:non-comment-lines-total results), "T-shirt size" "tbd"}])
       (println)
-      (print-table [;{"Metric" "% Duplication", "Value" duplicate-lines-percentage, "RAG Status" "tbd"}
-                    ;{"Metric" "Average class length", "Value" (:class-length-average results), "RAG Status" "tbd"} 
-                    ;{"Metric" "Average method length [excluding single-line methods]", "Value" method-len, "RAG Status" "tbd"}
-                    ;{"Metric" "Average cyclomatic complexity [excluding single-line methods]", "Value" ccn, "RAG Status" "tbd"}
-                    {"Metric" "# Duplicated lines",                        "Value" (:duplicate-lines-total results),        "RAG Status" "tbd"}
-                    {"Metric" "# Methods with # statements > 30",          "Value" (:methods-lines-violation-count results),  "RAG Status" "tbd"}
-                    {"Metric" "# Methods with cyclomatic complexity > 10", "Value" (:methods-ccn-violation-count results),    "RAG Status" "tbd"}
-                    {"Metric" "# Methods with parameters > 3",             "Value" (:method-param-violation-count results), "RAG Status" "tbd"}
-                    {"Metric" "# Packages with classes > 25",              "Value" (:package-class-violation-count results),          "RAG Status" "tbd"}
-                    {"Metric" "# Classes with # statements > 300",         "Value" (:class-len-violation-count  results),   "RAG Status" "tbd"}
+      (print-table [{"Metric" "# Duplicated lines",                        "Total" (:duplicate-lines-total results),         "Percentage"  duplicate-lines-percentage, "RAG Status" "tbd"}
+                    {"Metric" "# Methods with # statements > 30",          "Total" (:methods-len-violation-count results),   "Percentage"  methods-violating-len-percentage,"RAG Status" "tbd"}
+                    {"Metric" "# Methods with cyclomatic complexity > 10", "Total" (:methods-ccn-violation-count results),   "Percentage"  methods-violating-ccn-percentage,"RAG Status" "tbd"}
+                    {"Metric" "# Methods with parameters > 3",             "Total" (:method-param-violation-count results),  "Percentage"  methods-violating-params-percentage,"RAG Status" "tbd"}
+                    {"Metric" "# Classes with # statements > 300",         "Total" (:class-len-violation-count  results),    "Percentage"  classes-violating-len-percentage,"RAG Status" "tbd"}
+                    {"Metric" "# Packages with classes > 25",              "Total" (:package-class-violation-count results), "Percentage"  packages-violating-size-percentage,         "RAG Status" "tbd"}
                     ]))
   (println)
   (println))
