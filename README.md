@@ -1,10 +1,23 @@
-# heath-report-card
+# health-report-card
 
 A Clojure library to collect simple code metrics through static code analysis.
 
-java -jar  <jar>.jar  [-d --debug] <Java source folder>
+### To run:
+
+java -jar <jar>.jar  [-d --debug] <Java source folder>
+
+### To build
+
+Ensure leiningen is installed: http://leiningen.org/#install
+lein uberjar
+
 
 Add in best practices
+
+I THINK methods should be an OR, i.e. violations OR - difficult cos one of the results is in PMD. If we move all to PMD, maybe doable
+
+
+http://www.javacodegeeks.com/2012/12/rule-of-30-when-is-a-method-class-or-subsystem-too-big.html
 
 ## Duplicated lines
 Duplication is detected by simple textual comparison of tokens using PMD/CPD.
@@ -53,3 +66,4 @@ Self explanatory
 ## Packages with classes > 25
 
 ## Classes with statements > 300
+
