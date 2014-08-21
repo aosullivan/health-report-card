@@ -50,9 +50,9 @@
     
     (let [run-cpd  (fn [] (CPD/main (into-array ["--files" srcdir "--minimum-tokens" "20" "--format" "xml" "--encoding" "utf-8"])))  
           xml-stream (capture-console-in "CPD" run-cpd debug)]
-         (if (> (.available xml-stream) 0)
-          (def cpd-seq (xml-seq (xml/parse xml-stream)))
-          (def cpd-seq nil)))
+       (if (> (.available xml-stream) 0)
+         (def cpd-seq (xml-seq (xml/parse xml-stream)))
+         (def cpd-seq nil)))
                            
       {:duplicate-lines-total (apply + (for [node cpd-seq :when (= :duplication (:tag node))] (read-string (:lines (:attrs node))))) } ))
 
@@ -106,35 +106,36 @@
 
   (defn collect-metrics [srcdir debug]    
       (merge (cpd-line-count srcdir debug) 
-                    (ncss-line-count srcdir debug) 
-                    (pmd-length srcdir)))       
+             (ncss-line-count srcdir debug) 
+             (pmd-length srcdir)))       
 
+  (defn percent [amount total]  (format-num (/ (* 100 amount) total)))
+  
   (defn print-results [results]
-    (println)   
+    (println)
+    
     ;move this to collect-metrics
-    (let [duplicate-lines-percentage (format-num (/ (* 100 (:duplicate-lines-total results)) (:lines-total results)))
-          methods-violating-len-percentage (format-num (/ (* 100 (:methods-len-violation-count results)) (:methods-total results)))
-          methods-violating-ccn-percentage (format-num (/ (* 100 (:methods-ccn-violation-count results)) (:methods-total results)))
-          methods-violating-params-percentage (format-num (/ (* 100 (:method-param-violation-count results)) (:methods-total results)))
-          classes-violating-len-percentage (format-num (/ (* 100 (:class-len-violation-count results)) (:class-total results)))
-          packages-violating-size-percentage (format-num (/ (* 100 (:package-class-violation-count results)) (:packages-total results)))
-          whitespace-percentage (format-num (/ (* 100 (- (:lines-total results) (:non-comment-lines-total results))) (:lines-total results)))]
+    (let [duplicate-lines-percentage          (percent (:duplicate-lines-total results)         (:lines-total results))
+          methods-violating-len-percentage    (percent (:methods-len-violation-count results)   (:methods-total results))
+          methods-violating-ccn-percentage    (percent (:methods-ccn-violation-count results)   (:methods-total results))
+          methods-violating-params-percentage (percent (:method-param-violation-count results)  (:methods-total results))
+          classes-violating-len-percentage    (percent (:class-len-violation-count results)     (:class-total results))
+          packages-violating-size-percentage  (percent (:package-class-violation-count results) (:packages-total results))
+          whitespace-percentage               (percent (- (:lines-total results) (:non-comment-lines-total results)) (:lines-total results))]
       
-      (print-table [{"Metric" "Total lines",      "Value" (:lines-total results),             "T-shirt size" ""}
-                    {"Metric" "Total statements", "Value" (:non-comment-lines-total results), "T-shirt size" "tbd"}
-                    {"Metric" "Total methods",    "Value" (:methods-total results), "T-shirt size" "tbd"}
-                    {"Metric" "Total classes",    "Value" (:class-total results), "T-shirt size" "tbd"}
-                    {"Metric" "Total packages",   "Value" (:packages-total results), "T-shirt size" "tbd"}
-                    
-                    ])
-      (println)
-      (print-table [{"Metric" "# Duplicated lines",                        "Total" (:duplicate-lines-total results),         ,"RAG Status" "tbd"}
-                    {"Metric" "# Methods with # statements > 30",          "Total" (:methods-len-violation-count results),   ,"RAG Status" "tbd"}
-                    {"Metric" "# Methods with cyclomatic complexity > 10", "Total" (:methods-ccn-violation-count results),   ,"RAG Status" "tbd"}
-                    {"Metric" "# Methods with parameters > 3",             "Total" (:method-param-violation-count results),  ,"RAG Status" "tbd"}
-                    {"Metric" "# Classes with # statements > 300",         "Total" (:class-len-violation-count  results),    ,"RAG Status" "tbd"}
-                    {"Metric" "# Packages with classes > 25",              "Total" (:package-class-violation-count results), ,"RAG Status" "tbd"}
-                    ]))
+     (print-table [{"Metric" "Total lines",      "Value" (:lines-total results),             "T-shirt size" "tbd"}
+                   {"Metric" "Total statements", "Value" (:non-comment-lines-total results), "T-shirt size" "tbd"}
+                   {"Metric" "Total methods",    "Value" (:methods-total results),           "T-shirt size" "tbd"}
+                   {"Metric" "Total classes",    "Value" (:class-total results),             "T-shirt size" "tbd"}
+                   {"Metric" "Total packages",   "Value" (:packages-total results),          "T-shirt size" "tbd"}])
+     (println)
+      
+     (print-table [{"Metric" "Duplicated lines",                        "Total" (:duplicate-lines-total results),         "%", duplicate-lines-percentage,          "RAG Status" "tbd"}
+                   {"Metric" "Methods with # statements > 30",          "Total" (:methods-len-violation-count results),   "%", methods-violating-len-percentage,    "RAG Status" "tbd"}
+                   {"Metric" "Methods with cyclomatic complexity > 10", "Total" (:methods-ccn-violation-count results),   "%", methods-violating-ccn-percentage,    "RAG Status" "tbd"}
+                   {"Metric" "Methods with parameters > 3",             "Total" (:method-param-violation-count results),  "%", methods-violating-params-percentage, "RAG Status" "tbd"}
+                   {"Metric" "Classes with # statements > 300",         "Total" (:class-len-violation-count  results),    "%", classes-violating-len-percentage,    "RAG Status" "tbd"}
+                   {"Metric" "Packages with classes > 25",              "Total" (:package-class-violation-count results), "%", packages-violating-size-percentage,  "RAG Status" "tbd"}]))
   (println)
   (println))
 

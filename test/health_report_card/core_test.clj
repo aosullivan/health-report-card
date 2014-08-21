@@ -32,17 +32,6 @@
   (deftest ncss-class-len-test (testing "# Classes len > 300"
      (is (= 2.0 (:class-len-violation-count (ncss-line-count (:src-class-len src-map)))))))
   
-(run-tests)
-  
-  
-  
-  
-  (:class-len-violation-count (ncss-line-count (:src-ignorefiles src-map))
-  
-(:class-len-violation-count (ncss-line-count "E:\\workspace-healthcheck\\storm-common-1.0-SNAPSHOT-sources")  
-  
-  
-;loc count
 
 ;TODO 
 ; count LOC without class len violations
