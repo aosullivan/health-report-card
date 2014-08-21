@@ -8,7 +8,8 @@
                  :src-linecount "test\\java\\linecount"
                  :src-complexity "test\\java\\complexity"
                  :src-params "test\\java\\params"
-                 :src-class-len "test\\java\\classlen"} )
+                 :src-class-len "test\\java\\classlen"
+                 :src-ignorefiles "test\\java\\ignorefiles"} )
 
   (deftest cpd-duplicated-lines-test (testing "12 line with 20 token duplicate, from open brace to close class brace"
     (is (= 13 (:duplicate-lines-total (cpd-line-count (:src-dup src-map)))))))
@@ -31,9 +32,17 @@
   (deftest ncss-class-len-test (testing "# Classes len > 300"
      (is (= 2.0 (:class-len-violation-count (ncss-line-count (:src-class-len src-map)))))))
   
-(run-tests)  
+(run-tests)
   
- ;loc count
+  
+  
+  
+  (:class-len-violation-count (ncss-line-count (:src-ignorefiles src-map))
+  
+(:class-len-violation-count (ncss-line-count "E:\\workspace-healthcheck\\storm-common-1.0-SNAPSHOT-sources")  
+  
+  
+;loc count
 
 ;TODO 
 ; count LOC without class len violations
